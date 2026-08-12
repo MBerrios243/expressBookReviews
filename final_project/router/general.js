@@ -26,59 +26,78 @@ public_users.post("/register", (req,res) => {
 });
 
 // Get the book list available in the shop
-public_users.get('/',function (req, res) {
-    //Send the data as text/html
-    return res.send(JSON.stringify(books, null, 4));
+public_users.get('/', async function (req, res) {
+    try {
+        const response = await books; // This would use axios to run the asynchronous operation
+        return res.status(200).send(JSON.stringify(response, null, 4))
+    } catch (error) {
+        return res.status(500).json({message: "Unable to get the books."});
+    }
 });
 
 // Get book details based on ISBN
-public_users.get('/isbn/:isbn',function (req, res) {
-    const ISBN = req.params.isbn;
-    const book = books[ISBN];
+public_users.get('/isbn/:isbn', async function (req, res) {
+    try {
+        const ISBN = req.params.isbn;
 
-    //If book exists return it, otherwise send an error message
-    if (book) {
-        return res.json(book);
-    } else {
-        return res.status(404).json({message: "Book not found"});
+        const response = await books; // This would use axios to run the asynchronous operation
+        const book = response[ISBN];
+
+        if (book) {
+            return res.json(book);
+        } else {
+            return res.status(404).json({message: "Book not found"});
+        }
+    } catch (error) {
+        return res.status(500).json({message: "Unable to get the book."});
     }
  });
   
 // Get book details based on author
-public_users.get('/author/:author',function (req, res) {
-    const author = req.params.author;
-    const keys = Object.keys(books);
-    const all_books = {};
+public_users.get('/author/:author', async function (req, res) {
+    try {
+        const author = req.params.author;
+        const books = await books; // This would use axios to run the asynchronous operation
+        const keys = Object.keys(books);
+        const all_books = {};
 
-    for (const key of keys) {
-        if (author === books[key].author) {
-            all_books[key] = books[key];
+        for (const key of keys) {
+            if (author === books[key].author) {
+                all_books[key] = books[key];
+            }
         }
-    }
-
-    if (Object.keys(all_books).length !== 0) {
-        return res.json(all_books);
-    } else {
-        return res.status(404).json({message: "Book not found"});
+    
+        if (Object.keys(all_books).length !== 0) {
+            return res.json(all_books);
+        } else {
+            return res.status(404).json({message: "Book not found"});
+        }
+    } catch (error) {
+        return res.status(500).json({message: "Unable to get the book."});
     }
 });
 
 // Get all books based on title
-public_users.get('/title/:title',function (req, res) {
-    const title = req.params.title;
-    const keys = Object.keys(books);
-    const all_books = {};
+public_users.get('/title/:title',  async function (req, res) {
+    try {
+        const title = req.params.title;
+        const books = await books; // This would use axios to run the asynchronous operation
+        const keys = Object.keys(books);
+        const all_books = {};
 
-    for (const key of keys) {
-        if (title === books[key].title) {
-            all_books[key] = books[key];
+        for (const key of keys) {
+            if (title === books[key].title) {
+                all_books[key] = books[key];
+            }
         }
-    }
 
-    if (Object.keys(all_books).length !== 0) {
-        return res.json(all_books);
-    } else {
-        return res.status(404).json({message: "Book not found"});
+        if (Object.keys(all_books).length !== 0) {
+            return res.json(all_books);
+        } else {
+            return res.status(404).json({message: "Book not found"});
+        }
+    } catch (error) {
+        return res.status(500).json({message: "Unable to get the book."});
     }
 });
 
