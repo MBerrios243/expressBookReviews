@@ -69,8 +69,17 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
 });
 
 // Delete a book review
-regd_users.put("/auth/review/:isbn", (req, res) => {
+regd_users.delete("/auth/review/:isbn", (req, res) => {
     const ISBN = req.params.isbn;
+    const username = req.session.authorization.username;
+    const reviews = books[ISBN].reviews;
+
+    if (Object.hasOwn(reviews, username)) {
+        delete books[ISBN].reviews[username];
+        return res.send("Review successfully deleted!")
+    } else {
+        return res.send("You have not added a review yet!")
+    }
 });
 
 module.exports.authenticated = regd_users;
