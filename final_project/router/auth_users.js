@@ -16,7 +16,7 @@ const isValid = (username)=>{ //returns boolean
     }
 }
 
-const authenticatedUser = (username,password)=>{ //returns boolean
+const authenticatedUser = (username, password)=>{ //returns boolean
     // Filter the users array for any user with the same username and password
     let validusers = users.filter((user) => {
         return (user.username === username && user.password === password);
@@ -45,7 +45,7 @@ regd_users.post("/login", (req,res) => {
         let accessToken = jwt.sign({data: password}, 'access', {expiresIn: 60 * 60});
 
         //Store access token and username in session
-        req.session.authorization = {accessToken, username};
+        req.session.authorization = {accessToken, username}
         return res.status(200).send("User successfully logged in");
     } else {
         return res.status(208).json({message: "Invalid Login. Check username and password"});
@@ -54,8 +54,23 @@ regd_users.post("/login", (req,res) => {
 
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+    const ISBN = req.params.isbn;
+    const review = req.query.review;
+    const username = req.session.authorization.username;
+    const bookReviews = books[ISBN].reviews;
+
+    if (Object.hasOwn(bookReviews, username)) {
+        bookReviews.review = review;
+        return res.send("Review successfully modified!");
+    } else {
+        bookReviews[username] = review;
+        return res.send("Review successfully added!");
+    }
+});
+
+// Delete a book review
+regd_users.put("/auth/review/:isbn", (req, res) => {
+    const ISBN = req.params.isbn;
 });
 
 module.exports.authenticated = regd_users;
